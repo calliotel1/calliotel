@@ -1,0 +1,82 @@
+# syntax=docker/dockerfile:1.4
+# Multi-stage Dockerfile for Calliotel FastAPI + React app
+# Optimized for Emergent native deployments
+
+# ============================================
+# Stage 1: Python Backend Base
+# ============================================
+FROM python:3.11-slim as backend-base
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies for Python packages
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy backend requirements and install Python dependencies
+COPY backend/requirements.txt /app/backend/requirements.txt
+RUN pip install --no-cache-dir -r /app/backend/requirements.txt
+
+# ============================================
+# Stage 2: Final Runtime Image
+# ============================================
+FROM python:3.11-slim
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    supervisor \
+    nginx \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Copy Python packages from backend-base
+COPY --from=backend-base /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=backend-base /usr/local/bin /usr/local/bin
+
+# Copy backend code
+COPY backend /app/backend
+
+# Copy frontend build artifacts (pre-built by separate build step)
+COPY frontend/build /app/frontend/build
+
+# Copy supervisor configuration
+COPY etc/supervisor/conf.d/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Copy entrypoint script
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+# Create necessary directories
+RUN mkdir -p /app/backend/uploads/avatars \
+    /app/backend/uploads/voice_samples \
+    /app/backend/uploads/videos \
+    /app/backend/uploads/time_machine \
+    /app/backend/uploads/story_movies \
+    /app/backend/uploads/video_thumbnails \
+    /app/backend/uploads/voices \
+    /app/backend/uploads/holograms \
+    /app/media/voice_notes \
+    /app/media/images \
+    /app/media/videos \
+    /app/media/stickers \
+    /app/media/stories \
+    /var/log/supervisor
+
+# Expose ports
+EXPOSE 8001 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8001/health || exit 1
+
+# Run entrypoint
+ENTRYPOINT ["/app/entrypoint.sh"]

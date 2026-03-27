@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calliotel Debug</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            background: #f7fafc;
+        }
+        .status { 
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background: white;
+        }
+        .success { border-left: 4px solid #48bb78; }
+        .error { border-left: 4px solid #f56565; }
+        .warning { border-left: 4px solid #ed8936; }
+        pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 12px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        button {
+            background: linear-gradient(to right, #EA580C, #F97316);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Calliotel Debug Page</h1>
+    <p>Use this page to diagnose why the site might be blank on your device.</p>
+    
+    <div id="results"></div>
+    
+    <script>
+        const results = document.getElementById('results');
+        
+        function addStatus(message, type = 'success') {
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.innerHTML = message;
+            results.appendChild(div);
+        }
+        
+        // Test 1: JavaScript is working
+        addStatus('✓ JavaScript is enabled and running', 'success');
+        
+        // Test 2: LocalStorage
+        try {
+            localStorage.setItem('test', 'value');
+            localStorage.removeItem('test');
+            addStatus('✓ localStorage is accessible', 'success');
+        } catch (e) {
+            addStatus(`✗ localStorage BLOCKED: ${e.message}`, 'error');
+        }
+        
+        // Test 3: Fetch API
+        fetch('https://calliotel.com')
+            .then(r => addStatus('✓ Network requests working', 'success'))
+            .catch(e => addStatus(`✗ Network error: ${e.message}`, 'error'));
+        
+        // Test 4: Browser info
+        addStatus(`
+            <strong>Browser Info:</strong><br>
+            User Agent: ${navigator.userAgent}<br>
+            Platform: ${navigator.platform}<br>
+            Language: ${navigator.language}<br>
+            Online: ${navigator.onLine ? 'Yes' : 'No'}
+        `, 'success');
+        
+        // Test 5: Screen info
+        addStatus(`
+            <strong>Screen Info:</strong><br>
+            Width: ${window.screen.width}px<br>
+            Height: ${window.screen.height}px<br>
+            Pixel Ratio: ${window.devicePixelRatio}
+        `, 'success');
+        
+        // Test 6: Console errors
+        const originalError = console.error;
+        const errors = [];
+        console.error = function(...args) {
+            errors.push(args.join(' '));
+            originalError.apply(console, args);
+        };
+        
+        setTimeout(() => {
+            if (errors.length > 0) {
+                addStatus(`<strong>Console Errors:</strong><pre>${errors.join('\n')}</pre>`, 'error');
+            } else {
+                addStatus('✓ No console errors detected', 'success');
+            }
+        }, 2000);
+    </script>
+    
+    <h2>Quick Actions</h2>
+    <button onclick="window.location.reload()">Reload Page</button>
+    <button onclick="localStorage.clear(); alert('Cache cleared!'); window.location.reload();">Clear Cache & Reload</button>
+    <button onclick="window.location.href='/'">Go to Main Site</button>
+</body>
+</html>

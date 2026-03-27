@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Calliotel PWA Icon Generator</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin: 10px;
+            background: white;
+        }
+        .preview {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calliotel PWA Icon Generator</h1>
+        <p>Click the buttons to download PWA icons for your app!</p>
+        
+        <div class="preview">
+            <div>
+                <h3>192x192 Icon</h3>
+                <canvas id="icon192" width="192" height="192"></canvas>
+                <br>
+                <button onclick="downloadIcon('icon192', 'calliotel-icon-192.png')">Download 192x192</button>
+            </div>
+            <div>
+                <h3>512x512 Icon</h3>
+                <canvas id="icon512" width="512" height="512"></canvas>
+                <br>
+                <button onclick="downloadIcon('icon512', 'calliotel-icon-512.png')">Download 512x512</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function drawIcon(canvasId, size) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, size, size);
+            
+            // Create circular gradient background
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#FF8C32'); // Orange
+            gradient.addColorStop(0.5, '#C74E1E'); // Ember
+            gradient.addColorStop(1, '#A63F18'); // Dark ember
+            
+            // Draw circle background
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size/2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Draw white phone icon
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = size * 0.05;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            // Phone handset path (scaled to canvas size)
+            const scale = size / 24; // Original design was for 24x24
+            
+            ctx.beginPath();
+            // Phone handset shape
+            ctx.moveTo(20.01 * scale, 15.38 * scale);
+            ctx.bezierCurveTo(18.78 * scale, 15.38 * scale, 17.59 * scale, 15.18 * scale, 16.48 * scale, 14.82 * scale);
+            ctx.bezierCurveTo(15.95 * scale, 14.63 * scale, 15.38 * scale, 14.69 * scale, 14.98 * scale, 15.03 * scale);
+            ctx.lineTo(13.41 * scale, 17 * scale);
+            ctx.bezierCurveTo(10.58 * scale, 15.65 * scale, 7.93 * scale, 13.1 * scale, 6.52 * scale, 10.17 * scale);
+            ctx.lineTo(8.47 * scale, 8.51 * scale);
+            ctx.bezierCurveTo(8.74 * scale, 8.23 * scale, 8.82 * scale, 7.84 * scale, 8.71 * scale, 7.49 * scale);
+            ctx.bezierCurveTo(8.34 * scale, 6.38 * scale, 8.15 * scale, 5.19 * scale, 8.15 * scale, 3.96 * scale);
+            ctx.bezierCurveTo(8.15 * scale, 3.42 * scale, 7.7 * scale, 2.97 * scale, 7.16 * scale, 2.97 * scale);
+            ctx.lineTo(4.19 * scale, 2.97 * scale);
+            ctx.bezierCurveTo(3.65 * scale, 2.97 * scale, 3 * scale, 3.24 * scale, 3 * scale, 3.99 * scale);
+            ctx.bezierCurveTo(3 * scale, 13.28 * scale, 10.73 * scale, 21 * scale, 20.01 * scale, 21 * scale);
+            ctx.bezierCurveTo(20.72 * scale, 21 * scale, 21 * scale, 20.37 * scale, 21 * scale, 19.82 * scale);
+            ctx.lineTo(21 * scale, 16.37 * scale);
+            ctx.bezierCurveTo(21 * scale, 15.83 * scale, 20.55 * scale, 15.38 * scale, 20.01 * scale, 15.38 * scale);
+            ctx.closePath();
+            ctx.fill();
+        }
+        
+        function downloadIcon(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        // Draw both icons on page load
+        drawIcon('icon192', 192);
+        drawIcon('icon512', 512);
+    </script>
+</body>
+</html>

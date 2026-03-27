@@ -1,0 +1,238 @@
+/* Custom Animations */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Remove default text-align center from App */
+.App {
+    text-align: left;
+}
+
+/* Ensure emoji flags display properly on all platforms */
+* {
+    font-feature-settings: "liga" 1, "calt" 1;
+}
+
+/* Better emoji rendering for desktop browsers */
+span {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+}
+
+/* CRITICAL: Hide Emergent badge completely */
+#emergent-badge {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Hide any iframe or script-injected badges */
+a[href*="emergent"] {
+    display: none !important;
+}
+
+/* ===================================
+   HERO SECTION ANIMATIONS - DIGITAL FORTRESS
+   =================================== */
+
+@keyframes fall-and-fade {
+  0% {
+    transform: translateY(-100px) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(-20px) translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(10vh) translateX(0) rotate(0deg);
+  }
+  45% {
+    transform: translateY(35vh) translateX(40px) rotate(4deg);
+  }
+  65% {
+    transform: translateY(55vh) translateX(-25px) rotate(-2deg);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(75vh) translateX(30px) rotate(5deg);
+  }
+  100% {
+    transform: translateY(100vh) translateX(40px) rotate(8deg);
+    opacity: 0;
+  }
+}
+
+@keyframes bounce-slow {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes blob {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+}
+
+@keyframes shine-pulse {
+  0%, 100% {
+    text-shadow: 
+      0 0 30px rgba(255, 255, 255, 1),
+      0 0 60px rgba(255, 255, 255, 0.8),
+      0 0 90px rgba(255, 255, 255, 0.6),
+      0 0 120px rgba(255, 255, 255, 0.4),
+      0 4px 30px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    text-shadow: 
+      0 0 40px rgba(255, 255, 255, 1),
+      0 0 80px rgba(255, 255, 255, 0.9),
+      0 0 120px rgba(255, 255, 255, 0.7),
+      0 0 160px rgba(255, 255, 255, 0.5),
+      0 4px 40px rgba(0, 0, 0, 0.4);
+  }
+}
+
+@keyframes notification-glow {
+  0%, 100% {
+    box-shadow: 0 10px 30px rgba(147, 51, 234, 0.3);
+  }
+  50% {
+    box-shadow: 0 10px 40px rgba(147, 51, 234, 0.6);
+  }
+}
+
+@keyframes call-ring {
+  0%, 100% {
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 10px 40px rgba(59, 130, 246, 0.6);
+  }
+}
+
+@keyframes cta-glow {
+  0%, 100% {
+    box-shadow: 0 10px 30px rgba(249, 115, 22, 0.4);
+  }
+  50% {
+    box-shadow: 0 10px 50px rgba(249, 115, 22, 0.7);
+  }
+}
+
+@keyframes float-logo {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-15px) scale(1.02);
+  }
+}
+
+@keyframes logo-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 40px rgba(199, 78, 30, 0.8)) drop-shadow(0 0 80px rgba(199, 78, 30, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 60px rgba(199, 78, 30, 1)) drop-shadow(0 0 120px rgba(199, 78, 30, 0.6));
+  }
+}
+
+/* Animation Classes */
+.animate-fall-and-fade {
+  animation: fall-and-fade 10s ease-in-out forwards;
+}
+
+.slogan-glow {
+  text-shadow: 
+    0 0 30px rgba(255, 255, 255, 1),
+    0 0 60px rgba(255, 255, 255, 0.8),
+    0 0 90px rgba(255, 255, 255, 0.6),
+    0 0 120px rgba(255, 255, 255, 0.4),
+    0 4px 30px rgba(0, 0, 0, 0.3);
+  animation: shine-pulse 2s ease-in-out infinite;
+}
+
+.notification-ping {
+  animation: notification-glow 2s ease-in-out infinite;
+}
+
+.call-pulse {
+  animation: call-ring 3s ease-in-out infinite;
+}
+
+.cta-pulse {
+  animation: cta-glow 2s ease-in-out infinite;
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2s ease-in-out infinite;
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animate-scroll {
+  animation: scroll 2s ease-in-out infinite;
+}
+
+.animate-float-logo {
+  animation: float-logo 4s ease-in-out infinite;
+}
+
+.logo-ember-glow {
+  animation: logo-pulse 3s ease-in-out infinite;
+}
+
+.animation-delay-500 {
+  animation-delay: 0.5s;
+}
+
+.animation-delay-1000 {
+  animation-delay: 1s;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+

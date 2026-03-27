@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Homepage - Priority 1.0 -->
+  <url>
+    <loc>https://calliotel.com/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <lastmod>2026-03-25</lastmod>
+  </url>
+  
+  <!-- Virtual Number Marketplace (WHALE TIER) - Priority 0.95 -->
+  <url>
+    <loc>https://calliotel.com/virtual-numbers</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+    <lastmod>2026-03-25</lastmod>
+  </url>
+  
+  <!-- Ghost Verification (804 Services) - Priority 0.9 -->
+  <url>
+    <loc>https://calliotel.com/verification</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <lastmod>2026-03-25</lastmod>
+  </url>
+  
+  <!-- Auth Pages - Priority 0.8 -->
+  <url>
+    <loc>https://calliotel.com/signup</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2026-03-25</lastmod>
+  </url>
+  <url>
+    <loc>https://calliotel.com/login</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <lastmod>2026-03-25</lastmod>
+  </url>
+  
+  <!-- Pricing & Global Rates - Priority 0.8 -->
+  <url>
+    <loc>https://calliotel.com/pricing</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2026-03-25</lastmod>
+  </url>
+  <url>
+    <loc>https://calliotel.com/global-pricing</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+    <lastmod>2026-03-25</lastmod>
+  </url>
+</urlset>

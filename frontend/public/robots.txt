@@ -1,0 +1,30 @@
+# Calliotel.com - Robots.txt
+# Updated: 2026-03-25
+
+User-agent: *
+Allow: /
+Allow: /virtual-numbers
+Allow: /verification
+Allow: /pricing
+Allow: /global-pricing
+Allow: /signup
+Allow: /login
+
+# Disallow admin and dashboard pages
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /api/
+
+# Allow all CSS, JS, images for proper rendering
+Allow: /static/
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.webp$
+
+# Sitemap location
+Sitemap: https://calliotel.com/sitemap.xml
+
+# Crawl delay (optional - prevents server overload)
+Crawl-delay: 1

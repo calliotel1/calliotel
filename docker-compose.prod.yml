@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: calliotel_mongodb
+    restart: always
+    volumes:
+      - mongodb_data:/data/db
+      - ./backups:/backups
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+    ports:
+      - "127.0.0.1:27017:27017"
+    networks:
+      - calliotel_network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Backend API (FastAPI)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    container_name: calliotel_backend
+    restart: always
+    ports:
+      - "127.0.0.1:8001:8001"
+    environment:
+      - MONGO_URL=${MONGO_URL}
+      - DB_NAME=${DB_NAME}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL}
+      - ENVIRONMENT=production
+      - UVICORN_WORKERS=${UVICORN_WORKERS:-4}
+      - EMERGENT_LLM_KEY=${EMERGENT_LLM_KEY}
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    volumes:
+      - ./media:/app/media
+      - ./logs:/app/logs
+    networks:
+      - calliotel_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend Build (React)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+      args:
+        - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL}
+    container_name: calliotel_frontend
+    restart: always
+    volumes:
+      - frontend_build:/app/build
+    networks:
+      - calliotel_network
+
+volumes:
+  mongodb_data:
+    driver: local
+  frontend_build:
+    driver: local
+
+networks:
+  calliotel_network:
+    driver: bridge
