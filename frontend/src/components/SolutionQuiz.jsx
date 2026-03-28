@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MessageSquare, Briefcase, TrendingUp, ArrowRight, Check, X, ShoppingCart } from 'lucide-react';
+import { MessageSquare, Briefcase, TrendingUp, ArrowRight, Check, X, ShoppingCart, Loader } from 'lucide-react';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
+import axios from 'axios';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 const SolutionQuiz = () => {
   const navigate = useNavigate();
@@ -10,6 +14,8 @@ const SolutionQuiz = () => {
   const [selectedSolution, setSelectedSolution] = useState(null);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(null);
+  const [purchasing, setPurchasing] = useState(false);
+  const [purchaseError, setPurchaseError] = useState('');
 
   const solutions = [
     {
@@ -94,17 +100,63 @@ const SolutionQuiz = () => {
     setShowPurchaseModal(true);
   };
 
-  const handleConfirmPurchase = () => {
-    // REVENUE BRIDGE: Route to existing verified checkout page
-    if (selectedCountry) {
-      const checkoutUrl = `/verification-checkout?country=${encodeURIComponent(selectedCountry.country)}&price=${selectedCountry.price}&code=${selectedCountry.code}&service=${encodeURIComponent(selectedSolution.title)}`;
+  const handleConfirmPurchase = async () => {
+    if (!selectedCountry) return;
+    
+    setPurchasing(true);
+    setPurchaseError('');
+    
+    try {
+      // SMART BALANCE LOGIC: Try to purchase with wallet balance first
+      const token = localStorage.getItem('token');
       
-      setShowPurchaseModal(false);
-      navigate(checkoutUrl, { replace: true });
-    } else {
-      // Fallback to virtual numbers page
-      setShowPurchaseModal(false);
-      navigate('/virtual-numbers');
+      if (!token) {
+        // Not logged in - route to checkout
+        const checkoutUrl = `/verification-checkout?country=${encodeURIComponent(selectedCountry.country)}&price=${selectedCountry.price}&code=${selectedCountry.code}&service=${encodeURIComponent(selectedSolution.title)}`;
+        navigate(checkoutUrl, { replace: true });
+        return;
+      }
+      
+      // Parse price (remove $ and /mo)
+      const priceValue = parseFloat(selectedCountry.price.replace('$', '').replace('/mo', ''));
+      
+      // Try to purchase with wallet balance
+      const response = await axios.post(
+        `${API}/numbers/purchase-with-balance`,
+        {
+          country: selectedCountry.country.split(' ')[1] || 'USA', // Extract country name
+          service: selectedSolution.title,
+          price: priceValue
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      
+      if (response.data.success) {
+        // SUCCESS: Balance deducted, number assigned
+        setShowPurchaseModal(false);
+        navigate('/my-numbers?status=success&message=Number purchased successfully!');
+      }
+      
+    } catch (error) {
+      console.error('Purchase error:', error);
+      
+      if (error.response?.status === 402 || error.response?.data?.detail?.includes('Insufficient')) {
+        // INSUFFICIENT FUNDS: Route to payment gateway
+        setShowPurchaseModal(false);
+        const checkoutUrl = `/verification-checkout?country=${encodeURIComponent(selectedCountry.country)}&price=${selectedCountry.price}&code=${selectedCountry.code}&service=${encodeURIComponent(selectedSolution.title)}`;
+        navigate(checkoutUrl, { replace: true });
+      } else if (error.response?.status === 401) {
+        // Not authenticated - route to login
+        navigate('/login?redirect=/dashboard');
+      } else {
+        // System error - show message
+        setPurchaseError('CALLIOTEL: Verification node busy. Please try again.');
+        setTimeout(() => setPurchaseError(''), 5000);
+      }
+    } finally {
+      setPurchasing(false);
     }
   };
 
@@ -309,20 +361,36 @@ const SolutionQuiz = () => {
                 </div>
               </div>
 
+              {/* Error Message */}
+              {purchaseError && (
+                <div className="mb-4 p-3 bg-red-900/30 border border-red-500/50 rounded-lg">
+                  <p className="text-red-300 text-sm text-center">{purchaseError}</p>
+                </div>
+              )}
+
               {/* Actions */}
               <div className="flex space-x-3">
                 <Button
                   onClick={() => setShowPurchaseModal(false)}
                   variant="outline"
                   className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-800"
+                  disabled={purchasing}
                 >
                   Cancel
                 </Button>
                 <Button
                   onClick={handleConfirmPurchase}
-                  className="flex-1 bg-gradient-to-r from-ember to-ember-light hover:from-ember-light hover:to-ember text-white font-bold"
+                  disabled={purchasing}
+                  className="flex-1 bg-gradient-to-r from-ember to-ember-light hover:from-ember-light hover:to-ember text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  🔥 Confirm Purchase
+                  {purchasing ? (
+                    <>
+                      <Loader className="w-4 h-4 mr-2 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>🔥 Confirm Purchase</>
+                  )}
                 </Button>
               </div>
 
