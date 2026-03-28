@@ -47,8 +47,12 @@ const WalletTopUp = () => {
 
   const handlePurchase = (pkg) => {
     setSelectedPackage(pkg);
-    // Route to checkout with the package info
-    navigate(`/verification-checkout?amount=${pkg.price}&credits=${pkg.credits}&type=topup`);
+    // For now, show alert that payment integration is coming
+    // TODO: Integrate with Stripe/Crypto checkout
+    alert(`🔥 Adding $${pkg.credits} to your wallet for $${pkg.price}\n\nPayment integration coming soon!\n\nFor now, this would:\n1. Open Stripe/Crypto payment\n2. Process $${pkg.price} payment\n3. Add $${pkg.credits} to your balance`);
+    
+    // Temporary: Just navigate back to dashboard
+    // navigate('/dashboard');
   };
 
   return (

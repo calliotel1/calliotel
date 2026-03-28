@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, Navigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { 
@@ -233,6 +233,12 @@ const VerificationCheckout = () => {
         <Loader className="w-8 h-8 text-orange-500 animate-spin" />
       </div>
     );
+  }
+
+  // FAILSAFE GUARD: If no data provided, redirect back to dashboard
+  if (!urlCountry && !urlService && !service) {
+    console.error('CALLIOTEL: Missing purchase data. Redirecting to dashboard...');
+    return <Navigate to="/dashboard" replace />;
   }
 
   return (
