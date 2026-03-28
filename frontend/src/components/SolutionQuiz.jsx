@@ -95,10 +95,17 @@ const SolutionQuiz = () => {
   };
 
   const handleConfirmPurchase = () => {
-    // TODO: Implement actual purchase logic with Sonetel API
-    // For now, navigate to virtual numbers page
-    setShowPurchaseModal(false);
-    navigate(`/virtual-numbers?country=${selectedCountry.country}&price=${selectedCountry.price}`);
+    // REVENUE BRIDGE: Route to existing verified checkout page
+    if (selectedCountry) {
+      const checkoutUrl = `/verification-checkout?country=${encodeURIComponent(selectedCountry.country)}&price=${selectedCountry.price}&code=${selectedCountry.code}&service=${encodeURIComponent(selectedSolution.title)}`;
+      
+      setShowPurchaseModal(false);
+      navigate(checkoutUrl, { replace: true });
+    } else {
+      // Fallback to virtual numbers page
+      setShowPurchaseModal(false);
+      navigate('/virtual-numbers');
+    }
   };
 
   return (

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { 
@@ -21,6 +21,7 @@ const API = `${BACKEND_URL}/api`;
 
 const VerificationCheckout = () => {
   const { serviceSlug } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { darkMode } = useTheme();
   const { isAuthenticated, user } = useAuth();
@@ -34,6 +35,12 @@ const VerificationCheckout = () => {
   const [paymentMethod, setPaymentMethod] = useState('wallet'); // wallet, stripe, crypto
   const [walletBalance, setWalletBalance] = useState(0);
   const [error, setError] = useState('');
+  
+  // Get data from URL parameters (from SolutionQuiz)
+  const urlCountry = searchParams.get('country');
+  const urlPrice = searchParams.get('price');
+  const urlCode = searchParams.get('code');
+  const urlService = searchParams.get('service');
   
   // Service icons mapping
   const serviceIcons = {
@@ -76,19 +83,34 @@ const VerificationCheckout = () => {
     if (isAuthenticated) {
       fetchWalletBalance();
     }
-  }, [serviceSlug, isAuthenticated]);
+  }, [serviceSlug, isAuthenticated, urlCountry, urlPrice]);
 
   const fetchServiceInfo = async () => {
     try {
       setLoading(true);
-      // In production, fetch from API
-      setService({
-        slug: serviceSlug,
-        name: serviceNames[serviceSlug] || serviceSlug,
-        icon: serviceIcons[serviceSlug] || '📱'
-      });
+      
+      // Use URL parameters if available (from SolutionQuiz)
+      if (urlCountry && urlPrice) {
+        setService({
+          slug: urlService?.toLowerCase() || 'whatsapp',
+          name: urlService || 'WhatsApp',
+          icon: '📱'
+        });
+        setSelectedCountry(urlCountry);
+        // Remove $ and /mo from price string
+        const cleanPrice = parseFloat(urlPrice.replace('$', '').replace('/mo', ''));
+        setPrice(cleanPrice);
+      } else {
+        // Fallback to default
+        setService({
+          slug: serviceSlug,
+          name: serviceNames[serviceSlug] || serviceSlug,
+          icon: serviceIcons[serviceSlug] || '📱'
+        });
+        setPrice(countries[0].price);
+      }
+      
       setAvailableCountries(countries);
-      setPrice(countries[0].price);
       setLoading(false);
     } catch (error) {
       console.error('Failed to fetch service info:', error);
