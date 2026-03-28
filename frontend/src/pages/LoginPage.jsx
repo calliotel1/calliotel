@@ -68,7 +68,11 @@ const LoginPage = () => {
           title: "Welcome back!",
           description: "You've successfully logged in",
         });
-        navigate('/dashboard');
+        
+        // Force navigation to dashboard with a slight delay to ensure state updates
+        setTimeout(() => {
+          navigate('/dashboard', { replace: true });
+        }, 100);
       } else {
         // Check if it's a wrong password error
         const isPasswordError = result.error?.toLowerCase().includes('password') || 
