@@ -106,58 +106,13 @@ const SolutionQuiz = () => {
     setPurchasing(true);
     setPurchaseError('');
     
-    try {
-      // SMART BALANCE LOGIC: Try to purchase with wallet balance first
-      const token = localStorage.getItem('token');
-      
-      if (!token) {
-        // Not logged in - route to checkout
-        const checkoutUrl = `/verification-checkout?country=${encodeURIComponent(selectedCountry.country)}&price=${selectedCountry.price}&code=${selectedCountry.code}&service=${encodeURIComponent(selectedSolution.title)}`;
-        navigate(checkoutUrl, { replace: true });
-        return;
-      }
-      
-      // Parse price (remove $ and /mo)
-      const priceValue = parseFloat(selectedCountry.price.replace('$', '').replace('/mo', ''));
-      
-      // Try to purchase with wallet balance
-      const response = await axios.post(
-        `${API}/numbers/purchase-with-balance`,
-        {
-          country: selectedCountry.country.split(' ')[1] || 'USA', // Extract country name
-          service: selectedSolution.title,
-          price: priceValue
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
-      
-      if (response.data.success) {
-        // SUCCESS: Balance deducted, number assigned
-        setShowPurchaseModal(false);
-        navigate('/my-numbers?status=success&message=Number purchased successfully!');
-      }
-      
-    } catch (error) {
-      console.error('Purchase error:', error);
-      
-      if (error.response?.status === 402 || error.response?.data?.detail?.includes('Insufficient')) {
-        // INSUFFICIENT FUNDS: Route to payment gateway
-        setShowPurchaseModal(false);
-        const checkoutUrl = `/verification-checkout?country=${encodeURIComponent(selectedCountry.country)}&price=${selectedCountry.price}&code=${selectedCountry.code}&service=${encodeURIComponent(selectedSolution.title)}`;
-        navigate(checkoutUrl, { replace: true });
-      } else if (error.response?.status === 401) {
-        // Not authenticated - route to login
-        navigate('/login?redirect=/dashboard');
-      } else {
-        // System error - show message
-        setPurchaseError('CALLIOTEL: Verification node busy. Please try again.');
-        setTimeout(() => setPurchaseError(''), 5000);
-      }
-    } finally {
-      setPurchasing(false);
-    }
+    // FORCE REDIRECT TO CHECKOUT (bypassing smart balance API for now)
+    // TODO: Re-enable smart balance check once backend API is stable in production
+    const checkoutUrl = `/verification-checkout?country=${encodeURIComponent(selectedCountry.country)}&price=${selectedCountry.price}&code=${selectedCountry.code}&service=${encodeURIComponent(selectedSolution.title)}`;
+    
+    setShowPurchaseModal(false);
+    navigate(checkoutUrl, { replace: true });
+    setPurchasing(false);
   };
 
   return (

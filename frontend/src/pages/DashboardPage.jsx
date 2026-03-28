@@ -88,6 +88,23 @@ const DashboardPage = () => {
               </span>
             </div>
             <div className="flex items-center space-x-3">
+              {/* Wallet Balance Display */}
+              <div className="flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-green-900/30 to-emerald-900/30 rounded-lg border border-green-500/30">
+                <div className="flex flex-col items-end">
+                  <span className="text-xs text-gray-400 uppercase font-semibold tracking-wide">Available Balance</span>
+                  <span className="text-lg text-green-400 font-mono font-bold tracking-tight">
+                    ${loading ? '...' : balance.toFixed(2)}
+                  </span>
+                </div>
+                <button 
+                  onClick={() => navigate('/wallet')}
+                  className="bg-orange-500/20 hover:bg-orange-500/30 p-2 rounded-full transition-all group"
+                  title="Add Funds"
+                >
+                  <Plus className="w-4 h-4 text-orange-400 group-hover:text-orange-300" />
+                </button>
+              </div>
+              
               {/* Dark Mode Toggle */}
               <button
                 onClick={toggleTheme}
