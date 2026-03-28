@@ -240,6 +240,10 @@ app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 from routes import number_management
 app.include_router(number_management.router, prefix="/api/numbers", tags=["Number Management"])
 
+# Include smart purchase router (SMART BALANCE LOGIC)
+from routes import smart_purchase
+app.include_router(smart_purchase.router, prefix="/api/numbers", tags=["Smart Purchase"])
+
 # Include SMS router
 from routes import sms
 app.include_router(sms.router, prefix="/api/sms", tags=["SMS"])
