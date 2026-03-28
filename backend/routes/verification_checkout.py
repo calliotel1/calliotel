@@ -46,6 +46,59 @@ class StripeCheckoutRequest(BaseModel):
     amount: float
     payment_method: str = "card"
 
+class CryptoCheckoutRequest(BaseModel):
+    service: str
+    country: str
+    amount: float
+    payment_method: str = "crypto"
+
+@router.post("/checkout/crypto")
+async def create_crypto_checkout(
+    request: CryptoCheckoutRequest,
+    current_user = Depends(get_current_user)
+):
+    """
+    Create USDT TRC20 payment order for verification number
+    """
+    try:
+        # Create pending order
+        order_id = str(uuid4())
+        order_number = f"VERIFY-{order_id[:8].upper()}"
+        
+        pending_order = {
+            "order_id": order_id,
+            "order_number": order_number,
+            "user_id": current_user["_id"],
+            "user_email": current_user.get("email"),
+            "service": request.service,
+            "country": request.country,
+            "amount": request.amount,
+            "payment_method": "crypto",
+            "status": "pending_payment",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.pending_verification_orders.insert_one(pending_order)
+        
+        # Get USDT wallet address
+        usdt_wallet = os.environ.get('USDT_TRC20_WALLET_ADDRESS')
+        if not usdt_wallet:
+            raise HTTPException(status_code=500, detail="Crypto payment not configured")
+        
+        return {
+            "payment_id": order_id,
+            "order_number": order_number,
+            "wallet_address": usdt_wallet,
+            "amount": request.amount,
+            "currency": "USDT",
+            "network": "TRC20 (Tron)",
+            "instructions": f"Send exactly {request.amount} USDT to the wallet address",
+            "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
+        }
+        
+    except Exception as e:
+        logger.error(f"Crypto checkout error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to create crypto payment")
+
 @router.post("/purchase")
 async def purchase_verification_number(
     request: PurchaseRequest,
