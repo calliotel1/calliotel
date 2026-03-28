@@ -127,6 +127,7 @@ import VirtualNumbersHub from './pages/VirtualNumbersHub';
 import VerificationCheckout from './pages/VerificationCheckout';
 import AIHubPage from './pages/AIHubPage';
 import BulkSMSPage from './pages/BulkSMSPage';
+import WalletTopUp from './pages/WalletTopUp';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
@@ -179,6 +180,14 @@ function App() {
           <Route path="/virtual-numbers" element={<VirtualNumbersHub />} />
           <Route path="/ai-hub" element={<AIHubPage />} />
           <Route path="/bulk-sms" element={<BulkSMSPage />} />
+          <Route 
+            path="/wallet" 
+            element={
+              <ProtectedRoute requireVerification={false}>
+                <WalletTopUp />
+              </ProtectedRoute>
+            } 
+          />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
