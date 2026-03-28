@@ -200,7 +200,7 @@ async def create_stripe_checkout(
             }
         )
         
-        session = stripe_checkout.create_checkout_session(checkout_request)
+        session = await stripe_checkout.create_checkout_session(checkout_request)
         
         return {
             "url": session.url,
@@ -257,7 +257,7 @@ async def create_guest_checkout(request: GuestCheckoutRequest):
             }
         )
         
-        session = stripe_checkout.create_checkout_session(checkout_request)
+        session = await stripe_checkout.create_checkout_session(checkout_request)
         
         return {
             "url": session.url,
